@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+#    20-systatus - generate the system status
+#    Copyright (c) 2013 Nick Charlton
+#    Copyright (c) 2015 Lorenzo Gaggini
+#
+#    Authors: Nick Charlton <hello@nickcharlton.net>
+#             Lorenzo Gaggini <lg@lgaggini.net>
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+load=`cat /proc/loadavg | awk '{print $1}'`
+root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
+srv_usage=`df -h /srv | awk '/\// {print $(NF-1)}'`
+memory_usage=`free -m | awk '/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf("%3.1f%%", used/total*100)}'`
+swap_usage=`free -m | awk '/Swap/ { printf("%3.1f%%", "exit !$2;$3/$2*100") }'`
+time=`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`
+processes=`ps aux | wc -l`
+ip=`ifconfig $(route | grep default | awk '{ print $8 }') | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'`
+
+echo "%++++++++++++++++++++ SYSTEM STATUS ++++++++++++++++++++%"
+printf "System load:\t%s\tUptime:\t\t%s\n" $load "$time"
+printf "Memory usage:\t%s\tSwap usage:\t%s\n" $memory_usage $swap_usage
+printf "Usage on /:\t%s\tUsage on /srv:\t%s\n" $root_usage $srv_usage
+printf "Processes:\t%s\tIP Address:\t%s\n" $processes $ip 
+echo
