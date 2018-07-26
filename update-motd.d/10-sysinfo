@@ -22,7 +22,7 @@
 cpu=`cat /proc/cpuinfo | grep 'model name' | head -1 | cut -d':' -f2 | sed 's/^ *//g'`
 ram=`free -m | head -n 2 | tail -n 1 | awk {'print $2'}`MB
 kernel=`uname -srmo`
-os=`lsb_release -s -d`
+os=`command -v lsb_release && lsb_release -s -d` || os=`cat /etc/redhat-release` 
 
 echo "%+++++++++++++++++++++ SYSTEM INFO +++++++++++++++++++++%"
 printf "Cpu:\t%s\n" "$cpu"
