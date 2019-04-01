@@ -26,8 +26,8 @@ os=`command -v lsb_release && lsb_release -s -d` || os=`cat /etc/redhat-release`
 load=`cat /proc/loadavg | awk '{print $1}'`
 root_usage=`df -h / | awk '/\// {print $(NF-1)}'`
 srv_usage=`df -h /srv | awk '/\// {print $(NF-1)}'`
-memory_usage=`free -m | awk '/Mem:/ { total=$2 } /buffers\/cache/ { used=$3 } END { printf("%3.1f%%", used/total*100)}'`
-swap_usage=`free -m | awk '/Swap/ { printf("%3.1f%%", "exit !$2;$3/$2*100") }'`
+memory_usage=`free -m | awk '/Mem:/ { total=$2 } /Mem:/ { used=$3 } END { printf("%3.1f%%", used/total*100)}'`
+swap_usage=`free -m | awk '/Swap:/ { total=$2 } /Swap:/ { used=$3 } END { printf("%3.1f%%", used/total*100)}'`
 time=`uptime | grep -ohe 'up .*' | sed 's/,/\ hours/g' | awk '{ printf $2" "$3 }'`
 processes=`ps aux | wc -l`
 ip=`hostname -I | awk '{print $1}'`
